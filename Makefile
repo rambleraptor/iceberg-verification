@@ -17,11 +17,12 @@
 
 SHELL := bash
 PYTHON ?= python3
-PRETTIER := npx --yes prettier@3.9.9
+PRETTIER := npx prettier
 FIXTURES := "table-spec/**/*.json"
 VENV := .venv
 VENV_PYTHON := $(VENV)/bin/python
 VENV_STAMP := $(VENV)/.installed
+NODE_STAMP := node_modules/.installed
 
 .PHONY: help install format lint validate test license check clean
 
@@ -33,12 +34,16 @@ $(VENV_STAMP): dev/requirements.txt
 	$(VENV_PYTHON) -m pip install --quiet -r dev/requirements.txt
 	@touch $(VENV_STAMP)
 
-install: $(VENV_STAMP) ## Create .venv with the dev/ tooling dependencies
+$(NODE_STAMP): package.json package-lock.json
+	npm ci --no-audit --no-fund
+	@touch $(NODE_STAMP)
 
-format: ## Format the JSON fixtures in place
+install: $(VENV_STAMP) $(NODE_STAMP) ## Install the Python and Node tooling dependencies
+
+format: $(NODE_STAMP) ## Format the JSON fixtures in place
 	$(PRETTIER) --log-level warn --write $(FIXTURES)
 
-lint: ## Fail if any JSON fixture is not formatted
+lint: $(NODE_STAMP) ## Fail if any JSON fixture is not formatted
 	$(PRETTIER) --check $(FIXTURES)
 
 validate: $(VENV_STAMP) ## Validate every cases.json against the JSON Schemas
@@ -72,5 +77,5 @@ license: ## Check ASF license headers with Apache RAT
 
 check: lint validate test license ## Run all checks
 
-clean: ## Remove .venv
-	rm -rf $(VENV)
+clean: ## Remove .venv and node_modules
+	rm -rf $(VENV) node_modules
