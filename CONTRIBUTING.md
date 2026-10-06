@@ -268,6 +268,12 @@ to you, but it has to cover:
   It has to settle the comparison rule and how a failure is labeled. Pseudocode
   is one way to do that and prose is another.
 
+## Before opening a pull request
+
+All fixtures must be formatted by Prettier by running `make format`.
+
+Run `make install` to install the necessary dependencies.
+
 ## License headers
 
 Please do not add license headers to fixture files. They are test data, and a

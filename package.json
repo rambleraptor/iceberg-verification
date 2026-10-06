@@ -1,0 +1,7 @@
+{
+  "name": "iceberg-verification",
+  "private": true,
+  "devDependencies": {
+    "prettier": "3.9.9"
+  }
+}
